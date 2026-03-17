@@ -1,2 +1,2 @@
 puntos = 100
-print(f"tienes {puntos} puntos")
+print(f"tienes {puntos} gonorrea ome")
