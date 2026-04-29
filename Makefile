@@ -5,7 +5,7 @@ RESET	= \033[0;0m
 all: banner run
 
 run:
-	@python3 src/a_maze_ing.py
+	@python3 src/a_maze_ing.py config.txt
 
 banner:
 	@echo   " $(CYAN)    ___        __  ___                     _             $(RESET)  "
