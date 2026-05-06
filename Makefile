@@ -7,6 +7,9 @@ all: banner run
 run:
 	@python3 src/a_maze_ing.py config.txt
 
+install:
+	@pip3 install tools/mlx-2.2-py3-ubuntu-any.whl
+
 banner:
 	@echo   " $(CYAN)    ___        __  ___                     _             $(RESET)  "
 	@echo   " $(CYAN)   /   |      /  |/  /___ _____  ___      ( )____  _____ $(RESET)  "
@@ -14,3 +17,5 @@ banner:
 	@echo   " $(CYAN) / ___ |    / /  / / /_/ / / /_/  __/    / / / / / /_/ /  $(RESET)  "
 	@echo   " $(CYAN)/_/  |_|___/_/  /_/\__,_/ /___/\___/____/_/_/ /_/\__, /   $(RESET)  "
 	@echo   " $(CYAN)       /_____/                    /_____/       /____/    $(RESET)  "
+
+.PHONY: debug all lint run clean lint-strict
