@@ -1,21 +1,24 @@
-
-CYAN   = \033[1;36m
-RESET	= \033[0;0m
-
-all: banner run
-
-run:
-	@python3 src/a_maze_ing.py config.txt
+.PHONY: install run debug clean lint lint-strict
 
 install:
-	@pip3 install tools/mlx-2.2-py3-ubuntu-any.whl
+	pip install flake8 mypy pytest
 
-banner:
-	@echo   " $(CYAN)    ___        __  ___                     _             $(RESET)  "
-	@echo   " $(CYAN)   /   |      /  |/  /___ _____  ___      ( )____  _____ $(RESET)  "
-	@echo   " $(CYAN)  / /| |     / /|_/ / __ '/_  / / _ \     / / __ \/ __ '/ $(RESET)  "
-	@echo   " $(CYAN) / ___ |    / /  / / /_/ / / /_/  __/    / / / / / /_/ /  $(RESET)  "
-	@echo   " $(CYAN)/_/  |_|___/_/  /_/\__,_/ /___/\___/____/_/_/ /_/\__, /   $(RESET)  "
-	@echo   " $(CYAN)       /_____/                    /_____/       /____/    $(RESET)  "
+run:
+	python3 a_maze_ing.py config.txt
 
-.PHONY: debug all lint run clean lint-strict
+debug:
+	python3 -m pdb a_maze_ing.py config.txt
+
+clean:
+	rm -rf __pycache__ .mypy_cache .pytest_cache *.pyc *.pyo
+	rm -rf *.egg-info dist build
+	rm -f mazegen*.whl mazegen*.tar.gz
+	rm -f maze.txt
+
+lint:
+	flake8 .
+	mypy . --warn-return-any --warn-unused-ignores --ignore-missing-imports --disallow-untyped-defs --check-untyped-defs
+
+lint-strict:
+	flake8 .
+	mypy . --strict
