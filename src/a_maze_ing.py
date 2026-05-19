@@ -28,7 +28,8 @@ def main() -> None:
     
     # Un pequeño mensaje para confirmar que todo va bien
     print(f"Grid initialized with {len(maze.cells)} cells.")
-    maze.draw_fortytwo()
+    if width > 10 and height > 10:
+        maze.draw_fortytwo()
     maze.carve_passages(0, 0)
     maze.calculate_hex_for_all()
     # 3. Iniciamos la parte gráfica

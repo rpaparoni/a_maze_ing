@@ -138,7 +138,7 @@ class MazeWindow:
 
         # Comparamos nuestra posición con la meta
         print(self.exit_c, self.exit_r)
-        if self.player_c == self.exit_r - 1 and self.player_r == self.exit_c - 1:
+        if self.player_c == goal_c and self.player_r == goal_r:
             print("¡BINGO! ¡Laberinto completado!")
             self.clean_exit()
 
