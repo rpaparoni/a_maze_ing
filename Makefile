@@ -25,10 +25,17 @@ banner:
 install: $(VENV)/bin/activate
 
 $(VENV)/bin/activate: requirements.txt
-	@echo "$(CYAN)Creando caja de arena (venv)...$(RESET)"
-	@python3 -m venv $(VENV)
-	@$(PIP) install --upgrade pip
-	@$(PIP) install -r requirements.txt
+	@echo "$(CYAN)Creando caja de arena e instalando dependencias...$(RESET)"
+	@python3 -m venv $(VENV) > /dev/null 2>&1 && \
+	$(PIP) install --upgrade pip > /dev/null 2>&1 && \
+	$(PIP) install -r requirements.txt > /dev/null 2>&1 & \
+	pid=$$!; \
+	printf "$(CYAN)[$(RESET)"; \
+	while kill -0 $$pid 2>/dev/null; do \
+		printf "$(GREEN)█$(RESET)"; \
+		sleep 0.15; \
+	done; \
+	printf "$(CYAN)]$(RESET)\n"
 	@touch $(VENV)/bin/activate
 	@echo "$(GREEN)¡Entorno listo!$(RESET)"
 
