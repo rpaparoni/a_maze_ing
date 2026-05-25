@@ -5,36 +5,51 @@ from mazegen import MazeGenerator
 
 
 def main() -> None:
-    # Verificamos que el usuario nos pase el config.txt
+    """Main function that initializes the program components."""
     if len(sys.argv) != 2:
-        print("Usage: python3 a_maze_ing.py config.txt")
+        print("Error: Usage: python3 a_maze_ing.py config.txt")
         return
 
-    # 1. Leemos los datos del archivo de configuración
+    # 1. Parsear el archivo de forma segura
     config_data = parse_config(sys.argv[1])
     if not config_data:
         return
 
-    # 2. Ponemos a trabajar al Generador (Mordisco 1)
-    # Extraemos el tamaño y lo convertimos a entero
     width = int(config_data["WIDTH"])
     height = int(config_data["HEIGHT"])
-    goal = str(config_data["EXIT"])
+    entry_cords = config_data["ENTRY"].split(',')
+    
+    # Extraer variables para el inicio de la generacion
+    start_c = int(entry_cords[0])
+    start_r = int(entry_cords[1])
 
-    # Creamos la instancia del generador
+    # 2. Generar laberinto
     maze = MazeGenerator(height, width)
-
-    # Le pedimos que fabrique la cuadrícula llena de paredes
     maze.create_empty_grid()
-
-    # Un pequeño mensaje para confirmar que todo va bien
+    
     print(f"Grid initialized with {len(maze.cells)} cells.")
+    
+    # ¡El bloqueo del 42 recuperado!
+    # Solo se dibuja si el mapa es lo bastante grande para que quepa
     if width > 10 and height > 10:
         maze.draw_fortytwo()
-    maze.carve_passages(0, 0)
+        
+    maze.carve_passages(start_r, start_c)
     maze.calculate_hex_for_all()
-    # 3. Iniciamos la parte gráfica
-    game = MazeWindow(config_data, maze, goal)
+    
+    # 3. Cumplir el requisito del PDF: Guardar el output
+    output_filename = config_data["OUTPUT_FILE"]
+    maze.save_to_file(output_filename)
+
+    # 4. Iniciar graficos
+    print("\n--- CONTROLS ---")
+    print("[W, A, S, D] -> Move Player")
+    print("[1] -> Regenerate Maze")
+    print("[2] -> Show/Hide Solution Path")
+    print("[3] -> Change Color")
+    print("[4] -> Exit")
+    
+    game = MazeWindow(config_data, maze)
     game.run()
 
 
