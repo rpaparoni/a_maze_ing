@@ -98,10 +98,41 @@ class MazeGenerator:
             cell.hex_value = hex_sequence[valor]
             i += 1
 
-    def save_to_file(self, filename: str) -> None:
-        """Saves the generated maze to a text file in hexadecimal format."""
+    def path_to_directions(self, path: List[Tuple[int, int]]) -> str:
+        """Translates a list of coordinates into a string of cardinal directions."""
+        directions: str = ""
+        
+        # Si no hay camino o el camino es solo la celda de inicio
+        if len(path) < 2:
+            return directions
+            
+        i: int = 0
+        while i < len(path) - 1:
+            curr_r = path[i][0]
+            curr_c = path[i][1]
+            next_r = path[i+1][0]
+            next_c = path[i+1][1]
+            
+            # Comparamos fila vieja vs nueva y columna vieja vs nueva
+            if next_r > curr_r:
+                directions += "S"
+            elif next_r < curr_r:
+                directions += "N"
+            elif next_c > curr_c:
+                directions += "E"
+            elif next_c < curr_c:
+                directions += "W"
+                
+            i += 1
+            
+        return directions
+
+    def save_to_file(self, filename: str, config: Dict[str, str]) -> None:
+        """Saves the maze, entry/exit coordinates, and solution path to a text file."""
         try:
             f = open(filename, "w")
+            
+            # 1. Escribimos la cuadricula hexadecimal pura
             row: int = 0
             while row < self.height:
                 col: int = 0
@@ -111,15 +142,49 @@ class MazeGenerator:
                     col += 1
                 f.write(line + "\n")
                 row += 1
+                
+            # 2. El salto de linea en blanco que pide el PDF
+            f.write("\n")
+            
+            # 3. Coordenadas de entrada y salida
+            entry_str = config["ENTRY"]
+            exit_str = config["EXIT"]
+            f.write(entry_str + "\n")
+            f.write(exit_str + "\n")
+            
+            # 4. Encontrar el camino, traducirlo a letras y guardarlo
+            entry_cords = entry_str.split(',')
+            exit_cords = exit_str.split(',')
+            
+            start_c = int(entry_cords[0])
+            start_r = int(entry_cords[1])
+            exit_c = int(exit_cords[0])
+            exit_r = int(exit_cords[1])
+            
+            path = self.find_path(start_r, start_c, exit_r, exit_c)
+            directions = self.path_to_directions(path)
+            
+            f.write(directions + "\n")
+            
             f.close()
             print(f"Maze successfully saved to {filename}")
-        except Exception:
-            print("Error: Could not save the maze to the output file.")
+            
+        except Exception as e:
+            print(f"Error: Could not save the maze to the output file. ({str(e)})")
 
-    def draw_fortytwo(self) -> None:
+    def draw_fortytwo(self, start_r: int, start_c: int, exit_r: int, exit_c: int) -> None:
         """Marks the center cells to form the '42' logo before carving."""
         mid_r: int = self.height // 2
         mid_c: int = self.width // 2
+
+        # SISTEMA DE SEGURIDAD:
+        # El 42 ocupa una 'caja' imaginaria desde mid_r - 2 hasta mid_r + 2
+        # y desde mid_c - 3 hasta mid_c + 3. 
+        # Si la Entrada o Salida tocan esta caja, cancelamos el logo.
+        if (mid_r - 2 <= start_r <= mid_r + 2) and (mid_c - 3 <= start_c <= mid_c + 3):
+            return
+        if (mid_r - 2 <= exit_r <= mid_r + 2) and (mid_c - 3 <= exit_c <= mid_c + 3):
+            return
 
         # Celdas para formar el numero "4"
         self.block_cell(mid_r, mid_c - 1)

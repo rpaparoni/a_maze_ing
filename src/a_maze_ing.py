@@ -18,10 +18,13 @@ def main() -> None:
     width = int(config_data["WIDTH"])
     height = int(config_data["HEIGHT"])
     entry_cords = config_data["ENTRY"].split(',')
+    exit_cords = config_data["EXIT"].split(',')
     
     # Extraer variables para el inicio de la generacion
     start_c = int(entry_cords[0])
     start_r = int(entry_cords[1])
+    exit_c = int(exit_cords[0])
+    exit_r = int(exit_cords[1])
 
     # 2. Generar laberinto
     maze = MazeGenerator(height, width)
@@ -32,14 +35,14 @@ def main() -> None:
     # ¡El bloqueo del 42 recuperado!
     # Solo se dibuja si el mapa es lo bastante grande para que quepa
     if width > 8 and height > 6:
-        maze.draw_fortytwo()
+        maze.draw_fortytwo(start_r, start_c, exit_r, exit_c)
         
     maze.carve_passages(start_r, start_c)
     maze.calculate_hex_for_all()
     
     # 3. Cumplir el requisito del PDF: Guardar el output
     output_filename = config_data["OUTPUT_FILE"]
-    maze.save_to_file(output_filename)
+    maze.save_to_file(output_filename, config_data)
 
     # 4. Iniciar graficos
     print("\n--- CONTROLS ---")
