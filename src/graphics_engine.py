@@ -203,6 +203,7 @@ class MazeWindow:
         self.clean_exit()
 
     def clean_exit(self) -> None:
+        self.mlx.mlx_destroy_image(self.ptr, self.img)
         self.mlx.mlx_destroy_window(self.ptr, self.win)
         self.mlx.mlx_release(self.ptr)
         sys.exit(0)
