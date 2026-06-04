@@ -5,6 +5,7 @@ from typing import Dict
 from typing import Any
 from typing import List
 
+
 class MazeWindow:
     """Manages the graphic rendering and keyboard events of the game."""
     def __init__(self, config: Dict[str, str], maze: Any) -> None:
@@ -14,13 +15,13 @@ class MazeWindow:
         # Ajustamos inicio y fin leyendo el config
         entry_cords: List[str] = config["ENTRY"].split(',')
         goal_cords: List[str] = config["EXIT"].split(',')
-        
+
         self.player_c: int = int(entry_cords[0])
         self.player_r: int = int(entry_cords[1])
-        
+
         self.start_c: int = self.player_c
         self.start_r: int = self.player_r
-        
+
         self.exit_c: int = int(goal_cords[0])
         self.exit_r: int = int(goal_cords[1])
 
@@ -29,10 +30,10 @@ class MazeWindow:
         self.height = int(config["HEIGHT"]) * 50
         self.wall_color: int = 0xFFFFFF
         self.show_solution: bool = False
-        
+
         self.win = self.mlx.mlx_new_window(self.ptr, self.width, self.height, "A-Maze-ing")
         self.img = self.mlx.mlx_new_image(self.ptr, self.width, self.height)
-        
+
         result = self.mlx.mlx_get_data_addr(self.img)
         self.addr = result[0]
         self.bpp = result[1]
@@ -64,11 +65,11 @@ class MazeWindow:
         """Draws a single cell and its active walls."""
         x0: int = col * 50
         y0: int = row * 50
-        
+
         self.draw_rect(x0, y0, 50, 50, 0x000000)
         thick: int = 5
         color_wall: int = self.wall_color
-        
+
         if walls["north"] == 1:
             self.draw_rect(x0, y0, 50, thick, color_wall)
         if walls["south"] == 1:
@@ -89,12 +90,12 @@ class MazeWindow:
         x_pixel: int = (self.exit_c * 50) + 10
         y_pixel: int = (self.exit_r * 50) + 10
         self.draw_rect(x_pixel, y_pixel, 30, 30, 0xFF00FF)
-        
+
     def draw_path(self) -> None:
         """Draws the solution path on the maze."""
         if not self.show_solution:
             return
-            
+
         path = self.maze.find_path(self.player_r, self.player_c, self.exit_r, self.exit_c)
         i: int = 0
         while i < len(path):
@@ -108,22 +109,22 @@ class MazeWindow:
     def move_player(self, move_r: int, move_c: int, direction: str) -> None:
         """Handles player movement and collision."""
         current_cell = self.maze.cells[(self.player_r, self.player_c)]
-        
+
         if current_cell.walls[direction] == 1:
             return
-            
+
         self.draw_cell(self.player_r, self.player_c, current_cell.walls)
-        
+
         self.player_r += move_r
         self.player_c += move_c
-        
+
         # Volvemos a pintar cosas en el orden correcto
         if self.show_solution:
             self.draw_path()
-            
+
         self.draw_exit()
         self.draw_player()
-        
+
         self.mlx.mlx_put_image_to_window(self.ptr, self.win, self.img, 0, 0)
 
         if self.player_c == self.exit_c and self.player_r == self.exit_r:
@@ -143,21 +144,21 @@ class MazeWindow:
         else:
             self.show_solution = True
         self.render_all()
-        
+
     def regenerate_maze(self) -> None:
         """Creates a completely new maze and restarts the game."""
         print("Regenerating maze...")
         self.maze.create_empty_grid()
         if self.width > 10 and self.height > 10:
-            self.maze.draw_fortytwo()
+            self.maze.draw_fortytwo(self.start_r, self.start_c, self.exit_r, self.exit_c)
         self.maze.carve_passages(self.start_r, self.start_c)
         self.maze.calculate_hex_for_all()
-        
+
         # Reset player to start
         self.player_c = self.start_c
         self.player_r = self.start_r
         self.show_solution = False
-        
+
         self.render_all()
 
     def render_all(self) -> None:
@@ -172,7 +173,7 @@ class MazeWindow:
 
         if self.show_solution:
             self.draw_path()
-            
+
         self.draw_exit()
         self.draw_player()
         self.mlx.mlx_put_image_to_window(self.ptr, self.win, self.img, 0, 0)
@@ -188,7 +189,7 @@ class MazeWindow:
             self.change_maze_color()
         elif key == 52 or key == 65307:  # '4' or ESC
             self.clean_exit()
-            
+
         # W, A, S, D player movement
         elif key == 119:
             self.move_player(-1, 0, "north")
@@ -198,7 +199,7 @@ class MazeWindow:
             self.move_player(0, -1, "west")
         elif key == 100:
             self.move_player(0, 1, "east")
-            
+
     def handle_close(self, param: Any) -> None:
         self.clean_exit()
 
@@ -206,17 +207,17 @@ class MazeWindow:
         """Stops the MLX loop safely."""
         # En lugar de matar el programa, le decimos al bucle de C que termine.
         self.mlx.mlx_loop_exit(self.ptr)
-        
+
     def run(self) -> None:
         """Starts the MLX loop and cleans up memory after it finishes."""
         self.render_all()
-        
+
         # El programa se queda atrapado en esta linea mientras juegas
         self.mlx.mlx_loop(self.ptr)
-        
+
         # --- Cuando llamas a clean_exit(), el bucle de arriba se rompe ---
         # --- y Python continua leyendo por aqui, cerrando todo limpiamente ---
-        
+
         self.mlx.mlx_destroy_image(self.ptr, self.img)
         self.mlx.mlx_destroy_window(self.ptr, self.win)
         self.mlx.mlx_release(self.ptr)
