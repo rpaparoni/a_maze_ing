@@ -1,1 +1,1 @@
-*This project has been created as part of the 42 curriculum by ripaparo & salargo-.*
+*This project has been created as part of the 42 curriculum by ripaparo & *

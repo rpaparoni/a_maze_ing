@@ -36,6 +36,8 @@ def main() -> None:
     # Solo se dibuja si el mapa es lo bastante grande para que quepa
     if width > 8 and height > 6:
         maze.draw_fortytwo(start_r, start_c, exit_r, exit_c)
+    else:
+        print("error too small for 42")
 
     maze.carve_passages(start_r, start_c)
     maze.calculate_hex_for_all()

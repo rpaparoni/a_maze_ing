@@ -1,4 +1,3 @@
-import sys
 import random
 from mlx import Mlx
 from typing import Dict
