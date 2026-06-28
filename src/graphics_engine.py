@@ -3,6 +3,7 @@ from mlx import Mlx
 from typing import Dict
 from typing import Any
 from typing import List
+from mazegen import MazeGenerator
 
 
 class MazeWindow:
@@ -43,6 +44,8 @@ class MazeWindow:
 
         self.mlx.mlx_key_hook(self.win, self.handle_keypress, None)
         self.mlx.mlx_hook(self.win, 33, 0, self.handle_close, None)
+
+        self.config = config
 
     def put_pixel(self, x: int, y: int, color: int) -> None:
         """Puts a single pixel in the memory buffer."""
@@ -164,8 +167,8 @@ class MazeWindow:
                 self.start_r, self.start_c, self.exit_r, self.exit_c)
         self.maze.carve_passages(self.start_r, self.start_c)
         self.maze.calculate_hex_for_all()
+        self.maze.save_to_file(self.config["OUTPUT_FILE"], self.config)
 
-        # Reset player to start
         self.player_c = self.start_c
         self.player_r = self.start_r
         self.show_solution = False
