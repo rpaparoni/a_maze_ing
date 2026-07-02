@@ -42,7 +42,7 @@ def parse_config(filename: str) -> Dict[str, str]:
         width: int = int(config["WIDTH"])
         height: int = int(config["HEIGHT"])
 
-        if width < 0 or height < 0:
+        if width <= 0 or height <= 0:
             raise ValueError("Width and height must be non-negative integers")
         if width > 30 or height > 30:
             raise ValueError("Width and height must be less than 30 cells")

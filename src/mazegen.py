@@ -37,7 +37,7 @@ class MazeGenerator:
         if self.seed is not None:
             random.seed(self.seed)
 
-        if width < 0 or height < 0:
+        if width <= 0 or height <= 0:
             raise ValueError("Width and height must be non-negative integers")
 
     def create_empty_grid(self) -> None:
@@ -159,25 +159,25 @@ class MazeGenerator:
             f = open(filename, "w")
 
             row: int = 0
-            while row < self.height:
-                col: int = 0
-                line: str = ""
-                while col < self.width:
-                    line += self.cells[(row, col)].hex_value
-                    col += 1
-                f.write(line + "\n")
-                row += 1
+            with open(filename, "w") as f:
+                row: int = 0
+                while row < self.height:
+                    col: int = 0
+                    line: str = ""
+                    while col < self.width:
+                        line += self.cells[(row, col)].hex_value
+                        col += 1
+                    f.write(line + "\n")
+                    row += 1
 
-            f.write("\n")
-            f.write(str(start_r) + "," + str(start_c) + "\n")
-            f.write(str(exit_r) + "," + str(exit_c) + "\n")
+                f.write("\n")
+                f.write(str(start_r) + "," + str(start_c) + "\n")
+                f.write(str(exit_r) + "," + str(exit_c) + "\n")
 
             path = self.find_path(start_r, start_c, exit_r, exit_c)
             directions = self.path_to_directions(path)
 
             f.write(directions + "\n")
-
-            f.close()
             print(f"\033[92mMaze successfully saved to {filename}\n\033[0m")
 
         except Exception as e:

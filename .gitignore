@@ -11,5 +11,5 @@ mazegen*.tar.gz
 .venv/
 venv/
 maze.txt
-dist
+dist/
 src/mazegen.egg-info
